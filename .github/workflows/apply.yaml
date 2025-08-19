@@ -15,6 +15,24 @@ jobs:
     name: apply to specific environment (${{ inputs.env }})
     runs-on: ubuntu-latest
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{vars.AWS_REGION}} 
+
+      - name: Check if file exists in S3
+        id: check_s3_file
+        run: |
+          if aws s3api head-object --bucket ${{ vars.S3_BUCKET }} --key iam_ga/${{ inputs.env }}.txt; then
+            echo "file_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "file_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          AWS_PAGER: "" # Disable pager for non-interactive use
+
       - name: Run some unix commands to finish off
         run: |
           ls -lartFh
@@ -23,14 +41,28 @@ jobs:
 
   apply_to_all_environments:
     if: ${{ inputs.env == 'all'}}
-    environment: ${{ inputs.env }}
-    name: Running on All Environments (${{ inputs.env }})
+    strategy:
+      matrix:
+        env: [ "dev", "prod" ]
+    environment: ${{ matrix.env }}
+    name: Running on All Environments - now on ${{ matrix.env }}
     runs-on: ubuntu-latest
     steps:
+      - name: Check if file exists in S3
+        id: check_s3_file
+        run: |
+          if aws s3api head-object --bucket ${{ vars.S3_BUCKET }} --key iam_ga/${{ matrix.env }}.txt; then
+            echo "file_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "file_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          AWS_PAGER: "" # Disable pager for non-interactive use
+
       - name: Run some unix commands to finish off
         run: |
           echo "Running all environments - awsome sauce"
-          echo "Running in the environment "${{ inputs.env }} 
+          echo "Running in the environment "${{ matrix.env }} 
           ls -lartFh
           pwd
 
