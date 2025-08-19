@@ -5,7 +5,7 @@ jobs:
   create_output_job:
     runs-on: ubuntu-latest
     env:
-      my_env_var: "EnvironmentVariableValue"
+      my_env_var: "The Environment Variable Value"
     outputs:
       my_output: ${{ steps.generate_step.outputs.output_variable }}                  # steps and output are reserved words
     steps:
