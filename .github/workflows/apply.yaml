@@ -2,9 +2,6 @@ name: Terraform Apply
 on:
   workflow_dispatch:
     inputs:
-      git_hash:
-        description: "Git Hash"
-        required: true
       env:
         type: choice
         options: [ "dev", "prods", "all"]
