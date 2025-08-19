@@ -6,10 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       varStatus: "SUCCESS"
-
-    outputs:
-      status: ${{ steps.early.conclusion }}
     steps:
-      - name: Print Environment Variabal and ideally set it
-        run: |
-          echo "Environment var is ${{ env.varStatus }}"
+      - name: Print Environment Variable
+        run:  echo "Environment var is ${{ env.varStatus }}"
+
+      - name: Overwrite Environment Variable 
+        run:  echo "varStatus=FAILURE" >> $GITHUB_ENV
