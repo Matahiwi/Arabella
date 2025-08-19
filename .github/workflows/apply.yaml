@@ -33,8 +33,10 @@ jobs:
         env:
           AWS_PAGER: "" # Disable pager for non-interactive use
 
-      - name: Run some unix commands to finish off
+      - name: Conditional step based on file existence
+        if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
+          echo "The file exists in S3. Proceeding with subsequent steps."
           ls -lartFh
           echo "Not running on All but on "${{ inputs.env }}
           echo "Bye Bye Baby"
@@ -59,7 +61,8 @@ jobs:
         env:
           AWS_PAGER: "" # Disable pager for non-interactive use
 
-      - name: Run some unix commands to finish off
+      - name: Conditional step based on file existence
+        if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
           echo "Running all environments - awsome sauce"
           echo "Running in the environment "${{ matrix.env }} 
