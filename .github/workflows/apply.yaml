@@ -1,12 +1,14 @@
 name: Terraform Apply
 on: workflow_dispatch
 
-env:                 # Workflow level environment variable
-  dog: "Bowzer"      # can be used in all workflow jobs and steps
+#env:                 # Workflow level environment variable
+#  dog: "Bowzer"      # can be used in all workflow jobs and steps
 
 jobs:
   dog_job:
     runs-on: ubuntu-latest
+    env:
+      dog: "Bowzer"
     steps:
       - name: Print your dogs name 
         run:  echo "Your Pet is ${{ env.dog }}!"
