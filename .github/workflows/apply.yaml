@@ -1,30 +1,13 @@
 name: Terraform Apply
-on:
-  workflow_dispatch:
-    inputs:
-      env:
-        type: choice
-        options: [ "dev", "prod", "all"]
-        description: "Environment"
-        required: true
+on: [push]
 
 env:
+  MY_WORKFLOW_VARIABLE: "This is a workflow-level variable"
   WF_ALL_PLANS_EXIST: "SUCCESS"
 
 jobs:
-  apply_to_specific_environment:
-    if: ${{ inputs.env != 'all' }}
-    environment: ${{ inputs.env }}
-    name: apply to specific environment (${{ inputs.env }})
+  build:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Conditional step based on file existence
-        #if: steps.check_s3_file.outputs.file_exists == 'true'
-        run: |
-          echo "The File "${{ inputs.env }}".txt exists in "${{ inputs.env }}" happy days"
-          echo "Running all environments - awsome sauce"
-          echo "Running in the environment "${{ inputs.env }}
-          ls -lartFh
-        echo "Global variable is: ${{ env.WF_ALL_PLANS_EXIST }}"
-
+      - name: Use workflow variable
+        run: echo "Accessing workflow variable: ${{ env.MY_WORKFLOW_VARIABLE }}"
