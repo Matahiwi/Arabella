@@ -11,8 +11,8 @@ jobs:
       - name: Print your dogs name 
         run:  echo "Your Pet is ${{ env.dog }}!"
 
-      - name: Update your dogs name 
-        run:  run:  echo "dog=Skippy" >> $GITHUB_ENV
+        #- name: Update your dogs name 
+        #run:  run:  echo "dog=Skippy" >> $GITHUB_ENV
 
-      - name: Print your dogs name 
-        run:  echo "Your Pet is ${{ env.dog }}!"
+        #- name: Print your dogs name 
+        #run:  echo "Your Pet is ${{ env.dog }}!"
