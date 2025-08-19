@@ -3,21 +3,44 @@ on: workflow_dispatch
 
 jobs:
   create_output_job:
+    strategy:
+      matrix:
+        env: [ "dev", "prod" ]
+    environment: ${{ matrix.env }}
     runs-on: ubuntu-latest
     env:
-      my_env_var: "The Environment Variable Value"
+      my_env_var: "SUCCESS"
     outputs:
       my_output: ${{ steps.generate_step.outputs.output_variable }}                  # steps and output are reserved words
+
     steps:
-      - name: Update the Environment Variable
-        run: echo "my_env_var=Updated Environment Varaible Value" >> $GITHUB_ENV
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{vars.AWS_REGION}}
+
+      - name: Check if file exists in S3
+        id: check_s3_file
+        run: |
+          if aws s3api head-object --bucket ${{ vars.S3_BUCKET }} --key iam_ga/${{ matrix.env }}.txt; then
+            echo "file_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "file_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          AWS_PAGER: "" # Disable pager for non-interactive use
+
+      - name: Modify local environment variable if a plan does not exist
+        if: steps.check_s3_file.outputs.file_exists != 'true'
+        run: echo "my_env_var=FAILURE" >> $GITHUB_ENV
 
       - name: Generate string to use as output variable value
         id: generate_step                                                            # handle used to dig down into the output below
         run: echo "output_variable=${{ env.my_env_var }}" >> $GITHUB_OUTPUT          # update the variable my_variable value with a string
 
-      - name: Using the output variable generated in this job
-        run: echo "The value is ${{ steps.generate_step.outputs.output_variable }}"  # how we access the output in the job it was generated in
+
 
   use_output_job:
     needs: create_output_job
