@@ -7,6 +7,8 @@ on:
         options: [ "dev", "prod", "all"]
         description: "Environment"
         required: true
+env:
+  WF_ALL_PLANS_EXIST: "This is a workflow-level variable"
 
 jobs:
   apply_to_specific_environment:
@@ -36,10 +38,10 @@ jobs:
       - name: Conditional step based on file existence
         if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
-          echo "The file exists in S3. Proceeding with subsequent steps."
+          echo "Running all environments - awsome sauce"
+          echo "Running in the environment "${{ matrix.env }}
           ls -lartFh
-          echo "Not running on All but on "${{ inputs.env }}
-          echo "Bye Bye Baby"
+          pwd
 
   apply_to_all_environments:
     if: ${{ inputs.env == 'all'}}
@@ -68,11 +70,10 @@ jobs:
         env:
           AWS_PAGER: "" # Disable pager for non-interactive use
 
-      - name: Conditional step based on file existence
-        if: steps.check_s3_file.outputs.file_exists == 'true'
+      - name: Modify Global environment variable if a plan does not exist
+        if: steps.check_s3_file.outputs.file_exists != 'true'
         run: |
-          echo "Running all environments - awsome sauce"
-          echo "Running in the environment "${{ matrix.env }} 
-          ls -lartFh
-          pwd
+          echo "WF_ALL_PLANS_EXIST=FAIL" >> $GITHUB_ENV
+          echo "Not running on All but on "${{ inputs.env }}
+          echo "Bye Bye Baby Exiting All"
 
