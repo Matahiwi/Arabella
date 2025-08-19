@@ -10,7 +10,7 @@ on:
 
 jobs:
   apply_to_specific_environment:
-    if: ${{ inputs.env }} != "all"
+    if: ${{ inputs.env != "all" }}
     environment: ${{ inputs.env }}
     name: apply to specific environment (${{ inputs.env }})
     runs-on: ubuntu-latest
@@ -22,7 +22,7 @@ jobs:
           echo "Bye Bye Baby"
 
   apply_to_all_environments:
-    if: ${{ inputs.env }} == "all"
+    if: ${{ inputs.env == "all"}}
     environment: ${{ inputs.env }}
     name: Running on All Environments (${{ inputs.env }})
     runs-on: ubuntu-latest
