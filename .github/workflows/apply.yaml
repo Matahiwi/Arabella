@@ -1,20 +1,17 @@
 name: Terraform Apply
 on: workflow_dispatch
 
-#env:                 # Workflow level environment variable
-#  dog: "Bowzer"      # can be used in all workflow jobs and steps
-
 jobs:
-  dog_job:
+  check:
     runs-on: ubuntu-latest
     env:
-      dog: "Bowzer"
+      varStatus: "SUCCESS"
     steps:
-      - name: Print your dogs name
-        run:  echo "Your Pet is ${{ env.dog }}!"
+      - name: Print Environment Variable
+        run:  echo "Environment var is ${{ env.varStatus }}"
 
-      - name: Update your dogs nam "
-        run:  run:  echo "dog=Skippy" >> $GITHUB_ENV
+      - name: Overwrite Environment Variable
+        run:  echo "varStatus=FAILURE" >> $GITHUB_ENV
 
-      - name: Print your dogs name 
-        run:  echo "Your Pet is ${{ env.dog }}!"
+      - name: Print Environment Variable
+        run:  echo "Environment var is ${{ env.varStatus }}"
