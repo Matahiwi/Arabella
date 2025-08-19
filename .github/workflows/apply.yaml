@@ -36,8 +36,11 @@ jobs:
         run: |
           echo "The file exists in S3. Proceeding with subsequent steps."
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Run some unix commands to finish off
+        run: |
+          ls -lartFh
+          echo "GITHUB_OUTPUT value is $GITHUB_OUTPUT"
+          echo "Bye Bye Baby"
 
 
 
