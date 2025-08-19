@@ -8,7 +8,7 @@ on:
         description: "Environment"
         required: true
 env:
-  WF_ALL_PLANS_EXIST: "This is a workflow-level variable"
+  WF_ALL_PLANS_EXIST: "SUCCESS"
 
 jobs:
   apply_to_specific_environment:
@@ -38,12 +38,13 @@ jobs:
       - name: Conditional step based on file existence
         if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
+          echo "The File "${{ inputs.env }}".txt exists in "${{ inputs.env }}" happy days"
           echo "Running all environments - awsome sauce"
-          echo "Running in the environment "${{ matrix.env }}
+          echo "Running in the environment "${{ inputs.env }}
           ls -lartFh
           pwd
 
-  apply_to_all_environments:
+  check_plan_on_all_environments:
     if: ${{ inputs.env == 'all'}}
     strategy:
       matrix:
@@ -74,6 +75,17 @@ jobs:
         if: steps.check_s3_file.outputs.file_exists != 'true'
         run: |
           echo "WF_ALL_PLANS_EXIST=FAIL" >> $GITHUB_ENV
-          echo "Not running on All but on "${{ inputs.env }}
+          echo "Not running on All but on "${{ matrix.env }}
           echo "Bye Bye Baby Exiting All"
+
+  apply_on_all_environments:
+    needs: check_plan_on_all_environments
+    if: ${{ env.WF_ALL_PLANS_EXIST == 'SUCCESS'}}
+    name: apply to this stuff now
+    runs-on: ubuntu-latest
+    steps:
+      - name: run some unix commands
+        run: |
+          echo "The Global variable WF_ALL_PLANS_EXIST has the value "${{ env.WF_ALL_PLANS_EXIST }}
+          echo "Exiting the apply to all environments stage - happy days"
 
