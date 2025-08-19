@@ -16,3 +16,10 @@ jobs:
 
       - name: Print Environment Variable
         run:  echo "Environment var is ${{ env.varStatus }}"
+
+  status:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Environment Variable
+        run:  echo "Environment var is ${{ env.varStatus }}"
