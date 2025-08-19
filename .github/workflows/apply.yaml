@@ -12,3 +12,6 @@ jobs:
 
       - name: Overwrite Environment Variable 
         run:  echo "varStatus=FAILURE" >> $GITHUB_ENV
+
+      - name: Print Environment Variable
+        run:  echo "Environment var is ${{ env.varStatus }}"
