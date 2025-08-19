@@ -26,5 +26,5 @@ jobs:
           echo "Running all environments - awsome sauce"
           echo "Running in the environment "${{ inputs.env }}
           ls -lartFh
-        echo "Global variable is: "${{ env.WF_ALL_PLANS_EXIST ""
+        echo "Global variable is: "${{ env.WF_ALL_PLANS_EXIST }}
 
