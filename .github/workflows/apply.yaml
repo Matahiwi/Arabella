@@ -1,11 +1,12 @@
 name: Terraform Apply
 on: workflow_dispatch
 
+env:
+  varStatus: "SUCCESS"
+
 jobs:
   check:
     runs-on: ubuntu-latest
-    env:
-      varStatus: "SUCCESS"
     steps:
       - name: Print Environment Variable
         run:  echo "Environment var is ${{ env.varStatus }}"
