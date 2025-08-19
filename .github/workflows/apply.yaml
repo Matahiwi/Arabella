@@ -2,16 +2,24 @@ name: Terraform Apply
 on: workflow_dispatch
 
 jobs:
-  job1:
+  create_output_job:
     runs-on: ubuntu-latest
     outputs:
-      my_variable: ${{ steps.set_var.outputs.value }}
+      random_output_var: ${{ steps.random_step.outputs.random-number }}    # steps and output are reserved words
     steps:
-      - id: set_var
-        run: echo "value=hello_from_job1" >> $GITHUB_OUTPUT
+      - name: Generate random number to use as output
+        id: random_step                                             # handle used to dig down into the output below
+        run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT # dumps string into the output variable called random_number
+      - name: Using the random-number variable generated in this job
+        run: echo "The value is ${{ steps.random_step.outputs.random-number }}"  # how we access the output in the job it was generated in
 
-  job2:
+  use_output_job:
+    needs: create_output_job
     runs-on: ubuntu-latest
-    needs: job1
+    env:
+      random_var: ${{ needs.create_output_job.outputs.random_output_var }}
     steps:
-      - run: echo "Accessing variable from job1: ${{ needs.job1.outputs.my_variable }}"
+      - name: Directly access and echo output variable
+        run: echo "Random number is ${{ needs.create_output_job.outputs.random_output_var }}"
+      - name: Access output variable via env vars
+        run: echo "Output Var is $random_var"
