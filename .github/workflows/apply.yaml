@@ -9,6 +9,9 @@ jobs:
     outputs:
       my_output: ${{ steps.generate_step.outputs.output_variable }}                  # steps and output are reserved words
     steps:
+      - name: Update the Environment Variable
+        run: echo "my_env_var=Updated Environment Varaible Value" >> $GITHUB_ENV
+
       - name: Generate string to use as output variable value
         id: generate_step                                                            # handle used to dig down into the output below
         run: echo "output_variable=${{ env.my_env_var }}" >> $GITHUB_OUTPUT          # update the variable my_variable value with a string
