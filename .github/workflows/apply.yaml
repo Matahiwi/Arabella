@@ -10,11 +10,11 @@ jobs:
     env:
       dog: "Bowzer"
     steps:
-      - name: Print your dogs name 
+      - name: Print your dogs name
         run:  echo "Your Pet is ${{ env.dog }}!"
 
-        - name: Update your dogs name 
+      - name: Update your dogs nam "
         run:  run:  echo "dog=Skippy" >> $GITHUB_ENV
 
-        - name: Print your dogs name 
+      - name: Print your dogs name 
         run:  echo "Your Pet is ${{ env.dog }}!"
