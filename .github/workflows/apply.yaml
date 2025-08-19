@@ -13,10 +13,6 @@ on:
 jobs:
   apply:
     environment: ${{ inputs.env }}
-    defaults:
-      run:
-        working-directory: ${{ vars.WORKING_DIRECTORY }}
-
     name: apply (${{ inputs.env }})
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +21,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{varss.AWS_REGION}} 
+          aws-region: ${{vars.AWS_REGION}} 
 
       - name: Check if file exists in S3
         id: check_s3_file
@@ -43,6 +39,8 @@ jobs:
         run: |
           echo "The file exists in S3. Proceeding with subsequent steps."
 
+      - name: Checkout
+        uses: actions/checkout@v4
 
 
 
