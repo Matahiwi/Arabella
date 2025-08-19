@@ -16,4 +16,4 @@ jobs:
       my_env_variable: ${{ needs.create_output_job.outputs.random_output_var }}
     needs: job1
     steps:
-      - run: echo "Accessing variable from job1: $my_env_variable"
+      - run: echo "Accessing variable from job1 $my_env_variable"
