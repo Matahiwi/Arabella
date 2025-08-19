@@ -5,23 +5,23 @@ jobs:
   create_output_job:
     runs-on: ubuntu-latest
     outputs:
-      output_var: ${{ steps.generate_step.outputs.output_variable }}  # steps and output are reserved words
+      my_output: ${{ steps.generate_step.outputs.output_variable }}  # steps and output are reserved words
     steps:
-      - name: Generate random number to use as output
+      - name: Generate string to use as output variable value
         id: generate_step                                             # handle used to dig down into the output below
         run: echo "output_variable=SUCCESS" >> $GITHUB_OUTPUT         # update the variable my_variable value with a string
 
       - name: Using the output variable generated in this job
-        run: echo "The value is ${{ steps.random_step.outputs.output_variable }}"  # how we access the output in the job it was generated in
+        run: echo "The value is ${{ steps.random_step.outputs.my_output }}"  # how we access the output in the job it was generated in
 
   use_output_job:
     needs: create_output_job
     runs-on: ubuntu-latest
     env:
-      my_environment_variable: ${{ needs.create_output_job.outputs.output_var }}
+      my_environment_variable: ${{ needs.create_output_job.outputs.my_output }}
     steps:
       - name: Directly access and echo output variable
-        run: echo "Output Variable is ${{ needs.create_output_job.outputs.output_var }}"
+        run: echo "Output Variable is ${{ needs.create_output_job.outputs.my_output }}"
 
       - name: Access output variable via environment vars
         run: echo "Output Var is $my_environment_variable"
