@@ -1,8 +1,15 @@
-    jobs:
-      build:
-        runs-on: ubuntu-latest
-        env:
-          MY_JOB_VAR: "Hello from job"
-        steps:
-          - name: Print job variable
-            run: echo "Job variable: ${{ env.MY_JOB_VAR }}"
+name: Terraform Apply
+on: push
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      varStatus: "SUCCESS"
+
+    outputs:
+      status: ${{ steps.early.conclusion }}
+    steps:
+      - name: Print Environment Variabal and ideally set it
+        run: |
+          echo "Environment var is ${{ env.varStatus }}"
