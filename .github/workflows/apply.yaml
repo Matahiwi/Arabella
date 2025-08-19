@@ -1,17 +1,41 @@
 name: Terraform Apply
-on: push
+on: workflow_dispatch
+
+env:                         # Workflow level environment variable
+  dog: "Bowzer the dog"      # can be used in all workflow jobs and steps
+  cat: "Kitty the cat"
 
 jobs:
-  check:
+  dog_job:                           # uses the $ {{ env.varname }} syntax you can use $var_name as well - dosnt seem to work consistently only within bash
     runs-on: ubuntu-latest
-    env:
-      varStatus: "SUCCESS"
+    env:                             # Job level environment variables
+      greeting: "Woofy Woofy There"  # define variable greeting, can be used in all steps in this job
     steps:
-      - name: Print Environment Variable
-        run:  echo "Environment var is ${{ env.varStatus }}"
+      - name: "Define a step specific environment variable"
+        run: echo "Defining step specific environment variable" # each step requires either a run or uses to be valid
+        env:
+          owner: "First Dog Owner"
 
-      - name: Overwrite Environment Variable 
-        run:  echo "varStatus=FAILURE" >> $GITHUB_ENV
+      - name: "First Dog Step"
+        run: echo "${{ env.greeting }}  ${{ env.owner }} Your Pet is ${{ env.dog }}!"
 
-      - name: Print Environment Variable
-        run:  echo "Environment var is ${{ env.varStatus }}"
+      - name: "Second Dog step"
+        run: echo "${{ env.greeting }} ${{ env.owner }}. Your Pet Dog is ${{env.dog}}!"  # access vars with ${{env.VAR_NAME}} or $VAR_NAME
+        env:                         # Step Level environment variable overloads previous definition
+          owner: "Second Dog Owner"
+
+  cat_job:
+    runs-on: ubuntu-latest
+    env:                       # Job level environment variables
+      greeting: "Meeow There"  # can be used in all steps in this job
+    steps:
+    # Here we define a step level variable then overload it in the second step
+      - name: "First Cat step"
+        run: echo "${{ env.greeting }} ${{ env.owner }} . Your Pet Cat is ${{ env.cat }}!"
+        env:                   # Step Level environment variable
+          owner: "First Cat Owner"
+
+      - name: "Second Cat step"
+        run: echo "$greeting $owner. Your Pet is ${{ env.cat }}!"
+        env:                   # Step Level environment variable overloads previous definition
+          owner: "Second Cat Owner"
