@@ -16,10 +16,8 @@ jobs:
   use_output_job:
     needs: create_output_job
     runs-on: ubuntu-latest
-    env:
-      random_var: ${{ needs.create_output_job.outputs.random_output_var }}
     steps:
       - name: Directly access and echo output variable
         run: echo "Random number is ${{ needs.create_output_job.outputs.random_output_var }}"
       - name: Access output variable via env vars
-        run: echo "Output Var is $random_var"
+        run: echo "Output Var is $needs.create_output_job.outputs.random_output_var"
