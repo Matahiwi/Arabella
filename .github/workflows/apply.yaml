@@ -1,12 +1,8 @@
-    name: My Workflow
-    on: [push]
-
-    env:
-      MY_GLOBAL_VAR: "Hello from workflow"
-
     jobs:
       build:
         runs-on: ubuntu-latest
+        env:
+          MY_JOB_VAR: "Hello from job"
         steps:
-          - name: Print global variable
-            run: echo "Global variable: ${{ env.MY_GLOBAL_VAR }}"
+          - name: Print job variable
+            run: echo "Job variable: ${{ env.MY_JOB_VAR }}"
