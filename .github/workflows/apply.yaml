@@ -4,7 +4,7 @@ on:
     inputs:
       env:
         type: choice
-        options: [ "dev", "prods", "all"]
+        options: [ "dev", "prod", "all"]
         description: "Environment"
         required: true
 jobs:
