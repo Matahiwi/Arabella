@@ -1,0 +1,48 @@
+name: Terraform Apply
+on:
+  workflow_dispatch:
+    inputs:
+      git_hash:
+        description: "Git Hash"
+        required: true
+      env:
+        type: choice
+        options: [ "dev", "prods", "all"]
+        description: "Environment"
+        required: true
+jobs:
+  apply:
+    environment: ${{ inputs.env }}
+    defaults:
+      run:
+        working-directory: ${{ vars.WORKING_DIRECTORY }}
+
+    name: apply (${{ inputs.env }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{varss.AWS_REGION}} 
+
+      - name: Check if file exists in S3
+        id: check_s3_file
+        run: |
+          if aws s3api head-object --bucket ${{ vars.S3_BUCKET }} --key iam_ga/${{ inputs.env }}.txt; then
+            echo "file_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "file_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          AWS_PAGER: "" # Disable pager for non-interactive use
+
+      - name: Conditional step based on file existence
+        if: steps.check_s3_file.outputs.file_exists == 'true'
+        run: |
+          echo "The file exists in S3. Proceeding with subsequent steps."
+
+
+
+
