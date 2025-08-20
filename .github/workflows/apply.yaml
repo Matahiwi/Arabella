@@ -33,14 +33,17 @@ jobs:
         env:
           AWS_PAGER: "" # Disable pager for non-interactive use
 
-      - name: Conditional step based on file existence
+      - name: First conditional step based on file existence
         if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
+          echo "First Conditional Step"
           echo "The File "${{ inputs.env }}".txt exists in "${{ inputs.env }}" happy days"
-          echo "Running all environments - awsome sauce"
-          echo "Running in the environment "${{ inputs.env }}
-          ls -lartFh
-          pwd
+
+      - name: Second conditional step based on file existence
+        if: steps.check_s3_file.outputs.file_exists == 'true'
+        run: |
+          echo "Second Conditional Step"
+          echo "The File "${{ inputs.env }}".txt exists in "${{ inputs.env }}" happy days"
 
 
   apply_on_all_environments:
