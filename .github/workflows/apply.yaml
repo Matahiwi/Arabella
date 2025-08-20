@@ -45,6 +45,13 @@ jobs:
           echo "Second Conditional Step"
           echo "The File ${{ inputs.env }}.txt exists in ${{ inputs.env }} happy days"
 
+      - name: Third conditional step based on files NON existence
+        id: nonexistance_check
+        if: steps.check_s3_file.outputs.file_exists != 'true'
+        run: |
+          echo "Error searching for the File ${{ inputs.env }}.txt - exiting for the environment ${{ inputs.env }}"
+          echo "This runs only if we CANNOT file the file ${{ inputs.env }}.txt"
+
 
   apply_on_all_environments:
     if: ${{ inputs.env == 'all' }}
