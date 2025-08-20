@@ -5,7 +5,7 @@ jobs:
   create_output_job:
     strategy:
       matrix:
-        env: [ "dev", "prod" ]
+        env: [ "dev", "prodi" ]
     environment: ${{ matrix.env }}
     runs-on: ubuntu-latest
     env:
