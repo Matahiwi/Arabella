@@ -89,5 +89,5 @@ jobs:
       - name: Third conditional step based on files NON existence
         if: steps.check_s3_file.outputs.file_exists != 'true'
         run: |
-          echo "Error searching for the File "$${{ matrix.env }}".txt - exiting for the environment "$${{ matrix.env }}
-          echo "This runs only if we CANNOT file the file "${{matrix.env}}".txt"
+          echo "Error searching for the File ${{ matrix.env }}.txt - exiting for the environment ${{ matrix.env }}"
+          echo "This runs only if we CANNOT file the file ${{matrix.env}}.txt"
