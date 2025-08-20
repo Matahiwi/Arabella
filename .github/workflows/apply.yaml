@@ -37,13 +37,13 @@ jobs:
         if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
           echo "First Conditional Step"
-          echo "The File "${{ inputs.env }}".txt exists in "${{ inputs.env }}" happy days"
+          echo "The File ${{ inputs.env }}.txt exists in ${{ inputs.env }} happy days"
 
       - name: Second conditional step based on file existence
         if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
           echo "Second Conditional Step"
-          echo "The File "${{ inputs.env }}".txt exists in "${{ inputs.env }}" happy days"
+          echo "The File ${{ inputs.env }}.txt exists in ${{ inputs.env }} happy days"
 
 
   apply_on_all_environments:
@@ -77,16 +77,17 @@ jobs:
       - name: First conditional step based on file existence
         if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
-          echo "First Conditional Step"
-          echo "The File "${{ matrix.env }}".txt exists in "${{ matrix.env }}" happy days"
+          echo "First Conditional Step - based on files existance"
+          echo "The File ${{ matrix.env }}.txt exists in the environment ${{ matrix.env }} happy days"
 
       - name: Second conditional step based on file existence
         if: steps.check_s3_file.outputs.file_exists == 'true'
         run: |
-          echo "Second Conditional Step"
-          echo "The File "${{ matrix.env }}".txt exists in "${{ matrix.env }}" happy days"
+          echo "Second Conditional Step - based on file existance"
+          echo "The File ${{ matrix.env }}.txt exists in the environment ${{ matrix.env }} happy days"
 
       - name: Third conditional step based on files NON existence
+        id: nonexistance_check
         if: steps.check_s3_file.outputs.file_exists != 'true'
         run: |
           echo "Error searching for the File ${{ matrix.env }}.txt - exiting for the environment ${{ matrix.env }}"
