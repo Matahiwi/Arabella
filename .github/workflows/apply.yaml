@@ -50,7 +50,7 @@ jobs:
     if: ${{ inputs.env == 'all' }}
     strategy:
       matrix:
-        env: [ "dev", "prod" ]
+        env: [ "development", "prod" ]
     environment: ${{ matrix.env }}
 
     name: apply to all environments
