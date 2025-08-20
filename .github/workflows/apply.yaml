@@ -1,18 +1,57 @@
 name: Terraform Apply
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        options: [ "dev", "prod", "all"]
+        description: "Environment"
+        required: true
 
 jobs:
-  create_output_job:
+  apply_to_specific_environment:
+    if: ${{ inputs.env != 'all' }}
+    environment: ${{ inputs.env }}
+    name: apply to specific environment (${{ inputs.env }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{vars.AWS_REGION}} 
+
+      - name: Check if file exists in S3
+        id: check_s3_file
+        run: |
+          if aws s3api head-object --bucket ${{ vars.S3_BUCKET }} --key iam_ga/${{ inputs.env }}.txt; then
+            echo "file_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "file_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          AWS_PAGER: "" # Disable pager for non-interactive use
+
+      - name: Conditional step based on file existence
+        if: steps.check_s3_file.outputs.file_exists == 'true'
+        run: |
+          echo "The File "${{ inputs.env }}".txt exists in "${{ inputs.env }}" happy days"
+          echo "Running all environments - awsome sauce"
+          echo "Running in the environment "${{ inputs.env }}
+          ls -lartFh
+          pwd
+
+
+  apply_on_all_environments:
+    if: ${{ inputs.env == 'all' }}
     strategy:
       matrix:
-        env: [ "development", "production" ]
+        env: [ "dev", "prod" ]
     environment: ${{ matrix.env }}
-    runs-on: ubuntu-latest
-    env:
-      my_env_var: "SUCCESS"
-    outputs:
-      my_output: ${{ steps.generate_step.outputs.output_variable }}                  # steps and output are reserved words
 
+    name: apply to all environments
+    runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -32,24 +71,13 @@ jobs:
         env:
           AWS_PAGER: "" # Disable pager for non-interactive use
 
-      - name: Modify local environment variable if a plan does not exist
-        if: steps.check_s3_file.outputs.file_exists != 'true'
-        run: echo "my_env_var=FAILURE" >> $GITHUB_ENV
+      - name: Conditional step based on file existence
+        if: steps.check_s3_file.outputs.file_exists == 'true'
+        run: |
+          echo "The File "${{ matrix.env }}".txt exists in "${{ matrix.env }}" happy days"
+          echo "Running all environments - awsome sauce"
+          echo "Running in the environment "${{ matrix.env }}
+          ls -lartFh
+          pwd
 
-      - name: Generate string to use as output variable value
-        id: generate_step                                                            # handle used to dig down into the output below
-        run: echo "output_variable=${{ env.my_env_var }}" >> $GITHUB_OUTPUT          # update the variable my_variable value with a string
 
-
-
-  use_output_job:
-    needs: create_output_job
-    runs-on: ubuntu-latest
-    env:
-      my_environment_variable: ${{ needs.create_output_job.outputs.my_output }}
-    steps:
-      - name: Directly access and echo output variable
-        run: echo "Output Variable is ${{ needs.create_output_job.outputs.my_output }}"
-
-      - name: Access output variable via environment vars
-        run: echo "Output Var is $my_environment_variable"
